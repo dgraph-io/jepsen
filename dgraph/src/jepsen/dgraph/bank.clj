@@ -84,27 +84,23 @@
   "Writes back an account map."
   [t account]
   (t/with-trace "write-account"
-    (if (zero? (:amount account))
-      (let [k (assert+ (:key account))
-            kp (c/gen-pred "key"    pred-count k)
-            ap (c/gen-pred "amount" pred-count k)
-            tp (c/gen-pred "type"   pred-count k)]
-        (t/attribute! "delete" "true")
-        (c/delete! t [{:uid (assert+ (:uid account)),
-                       (assoc (keyword tp) nil)},
-                      {:uid (assert+ (:uid account)),
-                       (assoc (keyword kp) nil)},
-                      {:uid (assert+ (:uid account)),
-                       (assoc (keyword ap) nil)}]))
-      (let [k (assert+ (:key account))
-            kp (c/gen-pred "key"    pred-count k)
-            ap (c/gen-pred "amount" pred-count k)
-            tp (c/gen-pred "type"   pred-count k)]
+    (let [k (assert+ (:key account))
+          kp (c/gen-pred "key"    pred-count k)
+          ap (c/gen-pred "amount" pred-count k)
+          tp (c/gen-pred "type"   pred-count k)]
+      (if (zero? (:amount account))
+        (do
+          (t/attribute! "delete" "true")
+          (c/delete! t (-> account
+                           (select-keys [:uid])
+                           (assoc (keyword tp) nil),
+                           (assoc (keyword kp) nil),
+                           (assoc (keyword ap) nil))))
         (c/mutate! t (-> account
                          (select-keys [:uid])
                          (assoc (keyword tp) (:type account))
                          (assoc (keyword kp) (:key account))
-                         (assoc (keyword ap) (:amount account)))))))
+                         (assoc (keyword ap) (:amount account))))))))
 
 (defrecord Client [conn]
   client/Client
