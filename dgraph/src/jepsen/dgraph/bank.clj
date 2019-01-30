@@ -84,8 +84,18 @@
   "Writes back an account map."
   [t account]
   (t/with-trace "write-account"
-    ; (if (zero? (:amount account))
-    ;   (c/delete! t (assert+ (:uid account)))
+    (if (zero? (:amount account))
+      (let [k (assert+ (:key account))
+            kp (c/gen-pred "key"    pred-count k)
+            ap (c/gen-pred "amount" pred-count k)
+            tp (c/gen-pred "type"   pred-count k)]
+        (t/attribute! "delete" "true")
+        (c/delete! t [{:uid (assert+ (:uid account)),
+                       (assoc (keyword tp) nil)},
+                      {:uid (assert+ (:uid account)),
+                       (assoc (keyword kp) nil)},
+                      {:uid (assert+ (:uid account)),
+                       (assoc (keyword ap) nil)}]))
       (let [k (assert+ (:key account))
             kp (c/gen-pred "key"    pred-count k)
             ap (c/gen-pred "amount" pred-count k)
