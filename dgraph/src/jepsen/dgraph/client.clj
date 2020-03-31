@@ -270,6 +270,7 @@
           (if (and (< 0 i)
                    (or (re-find #"DEADLINE_EXCEEDED" message)
                        (re-find #"Pending transactions" message)
+                       (re-find #"is already running" message)
                        (re-find #"ABORTED" message)))
             (do
               (warn "alter-schema! failed due to retriable error, retrying...")
