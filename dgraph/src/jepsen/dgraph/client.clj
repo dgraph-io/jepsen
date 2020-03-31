@@ -254,10 +254,9 @@
 
 (defn alter-schema!
   "Takes a schema string (or any number of strings) and applies that alteration
-  to dgraph. Retries if DEADLINE_EXCEEDED, or Dgraph complains about pending
-  transactions, or just tells us the alter ABORTED, since Dgraph likes to throw
-  these for ??? reasons at the start of the test. Should be idempotent, so...
-  hopefully we can retry, at least in this context?"
+  to dgraph. Retries if the alter fails. There are too many different types of
+  failures so we retry all to avoid missing any. Alters are idempotent so retrying
+  should not be an issue."
   [^DgraphClient client & schemata]
   (t/with-trace "client.alter-schema!"
     (with-retry [i 10]
