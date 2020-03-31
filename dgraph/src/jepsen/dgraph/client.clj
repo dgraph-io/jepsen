@@ -262,21 +262,16 @@
   (t/with-trace "client.alter-schema!"
     (with-retry [i 10]
       (unwrap-exceptions
-        (.alter client (.. (DgraphProto$Operation/newBuilder)
-                           (setSchema (str/join "\n" schemata))
-                           build)))
+       (.alter client (.. (DgraphProto$Operation/newBuilder)
+                          (setSchema (str/join "\n" schemata))
+                          build)))
       (catch io.grpc.StatusRuntimeException e
-        (let [message (.getMessage e)]
-          (if (and (< 0 i)
-                   (or (re-find #"DEADLINE_EXCEEDED" message)
-                       (re-find #"Pending transactions" message)
-                       (re-find #"is already running" message)
-                       (re-find #"ABORTED" message)))
-            (do
-              (warn "alter-schema! failed due to retriable error, retrying...")
-              (Thread/sleep (rand-int 5000))
-              (retry (dec i)))
-            (throw e)))))))
+        (if (< 0 i)
+          (do
+            (warn "alter-schema! failed, retrying...")
+            (Thread/sleep (rand-int 5000))
+            (retry (dec i)))
+          (throw e))))))
 
 (defn ^DgraphProto$Response mutate!*
   "Takes a mutation object and applies it to a transaction. Returns a Response."
