@@ -24,7 +24,7 @@ RUN apt install -y apt-transport-https
 RUN apt install -y software-properties-common
 
 # Install Jepsen deps
-RUN apt-get install -y build-essential bzip2 curl faketime iproute2 iptables iputils-ping libzip4 logrotate man man-db net-tools ntpdate psmisc python rsyslog sudo tar unzip vim wget && apt-get remove -y --purge --auto-remove systemd
+RUN apt-get install -y build-essential bzip2 curl faketime iproute2 iptables iputils-ping libzip4 logrotate man man-db net-tools ntpdate psmisc python3 python-is-python3 rsyslog sudo tar unzip vim wget && apt-get remove -y --purge --auto-remove systemd
 
 EXPOSE 22
 CMD ["/run.sh"]
