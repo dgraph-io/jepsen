@@ -1,18 +1,18 @@
-FROM ubuntu:16.04
+FROM ubuntu:22.04
 MAINTAINER jake@apache.org
 
 ENV LEIN_ROOT true
+ENV DEBIAN_FRONTEND noninteractive
 
 #
 # Jepsen dependencies
 #
 RUN apt-get -y -q update && \
     apt-get -y -q install software-properties-common && \
-    add-apt-repository ppa:openjdk-r/ppa && \
     apt-get -y -q update && \
     apt-get install -qqy \
         dos2unix \
-        openjdk-8-jdk \
+        openjdk-11-jdk \
         libjna-java \
         git \
         gnuplot \

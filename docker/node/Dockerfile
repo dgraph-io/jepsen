@@ -1,5 +1,7 @@
 # Based on the deprecated `https://github.com/tutumcloud/tutum-debian`
-FROM debian:buster
+FROM debian:bookworm
+
+ENV DEBIAN_FRONTEND noninteractive
 
 # Install packages
 RUN apt-get update && \
@@ -9,8 +11,7 @@ RUN apt-get update && \
         pwgen \
         && \
 mkdir -p /var/run/sshd && \
-sed -i "s/UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config && \
-sed -i "s/PermitRootLogin without-password/PermitRootLogin yes/g" /etc/ssh/sshd_config
+sed -i "s/PermitRootLogin.*/PermitRootLogin yes/g" /etc/ssh/sshd_config
 
 ENV AUTHORIZED_KEYS **None**
 
